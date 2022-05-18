@@ -20,6 +20,13 @@ function checksExistsUserAccount(request, response, next) {
   return next();
 }
 
+// function verifyIfAlreadyExistsUser(request, response, next) {
+//   const { username } = request.headers;
+//   const user =
+// }
+
+//Cadastro de usuario
+
 app.post("/users", (request, response) => {
   const { name, username } = request.body;
   const users2 = {
@@ -33,11 +40,20 @@ app.post("/users", (request, response) => {
   return response.json(users2);
 });
 
+// Busca de todoList por usuario
 app.get("/todos", checksExistsUserAccount, (request, response) => {
   const { username } = request.headers;
-  return response.json(username);
+  const findUser = users.find((user) => {
+    return user.username === username;
+  });
+  const { todos } = findUser;
+  if (todos.length === 0) {
+    return response.json("Does not contain todoList");
+  }
+  return response.json(todos);
 });
 
+// Cadastro de TodoList
 app.post("/todos", checksExistsUserAccount, (request, response) => {
   const { title, deadline } = request.body;
   const { username } = request.headers;
@@ -47,7 +63,8 @@ app.post("/todos", checksExistsUserAccount, (request, response) => {
     const todoList = {
       id: uuidv4(),
       title: title,
-      done: new Date(deadline),
+      done: false,
+      deadline: new Date(deadline),
       created_at: new Date(),
     };
     user.todos.push(todoList);
